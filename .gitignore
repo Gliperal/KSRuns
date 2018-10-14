@@ -1,0 +1,7 @@
+# Compiled class file
+*.class
+
+# SQL Passwords files
+src/com/ksruns/SQL.txt
+target/classes/com/ksruns/SQL.txt
+
