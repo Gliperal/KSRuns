@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" version="3.0">
+	<display-name>KSRuns</display-name>
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+	</welcome-file-list>
+	
+	<error-page>
+		<error-code>404</error-code>
+		<location>/WEB-INF/404.html</location>
+	</error-page>
+	
+	<servlet>
+		<servlet-name>servlet_levels</servlet-name>
+		<servlet-class>com.ksruns.LevelsServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>servlet_levels</servlet-name>
+		<url-pattern>/api/levels</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>servlet_runs</servlet-name>
+		<servlet-class>com.ksruns.RunsServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>servlet_runs</servlet-name>
+		<url-pattern>/api/runs</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>servlet_level_page</servlet-name>
+		<servlet-class>com.ksruns.LevelPageServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>servlet_level_page</servlet-name>
+		<url-pattern>/level/*</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>servlet_login</servlet-name>
+		<servlet-class>com.ksruns.LoginServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>servlet_login</servlet-name>
+		<url-pattern>/api/login</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>servlet_submit_page</servlet-name>
+		<servlet-class>com.ksruns.SubmitPageServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>servlet_submit_page</servlet-name>
+		<url-pattern>/submit/</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>servlet_submit</servlet-name>
+		<servlet-class>com.ksruns.SubmitServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>servlet_submit</servlet-name>
+		<url-pattern>/api/submit</url-pattern>
+	</servlet-mapping>
+</web-app>

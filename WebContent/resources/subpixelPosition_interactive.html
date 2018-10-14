@@ -1,0 +1,317 @@
+<html>
+<head>
+	<title>404</title>
+	<link rel="icon" href="/images/util/Juni.png" type="image/png">
+<script>
+
+
+
+var g_rows = 20;
+var g_data;		// 0 = velocity, 1 = position, 2 = subpixel position
+var g_input;		// 0 = S, 1 = jump
+var g_ground;
+var g_ceiling;
+
+var start_vel = 0;
+var start_pos = 161;
+var start_sub = -100;
+
+function onTableChange()
+{
+	g_data[0][0] = start_vel;
+	g_data[0][1] = start_pos;
+	g_data[0][2] = start_sub;
+
+	for(var i = 1; i < g_rows; i++)
+	{
+		var vel = g_data[i-1][0];
+		var pos = g_data[i-1][1];
+		var sub = g_data[i-1][2];
+
+		var gravity = 45;
+		if(g_input[i][0])
+		{
+			if(document.getElementById("hijump").checked)
+			{
+				gravity = 23;
+			}
+			else
+			{
+				gravity = 40;
+			}
+		}
+		// if(document.getElementById("input" + i).value == "S" && document.getElementById("input" + (i-1)).value != "S")
+		if(g_input[i][1])
+		{
+			vel = -500;
+		}
+
+		vel += gravity;
+		if (vel > 700)
+			vel = 700;
+		sub += Math.abs(vel);
+		var move = 0;
+		while (sub > 100)
+		{
+			sub -= 100;
+			move += 1;
+		}
+		if (vel < 0)
+			pos -= move;
+		else
+			pos += move;
+
+		if (!isNaN(g_ground) && pos > g_ground)
+		{
+			pos = g_ground;
+			sub = -100;
+			vel = 0;
+		}
+
+		if (!isNaN(g_ceiling) && pos < g_ceiling)
+		{
+			pos = g_ceiling;
+			sub = -100;
+			vel = 0;
+		}
+
+		g_data[i][0] = vel;
+		g_data[i][1] = pos;
+		g_data[i][2] = sub;
+	}
+
+	for(var i = 1; i < g_rows; i++)
+	{
+		document.getElementById("vel" + i).innerHTML = g_data[i][0];
+		document.getElementById("pos" + i).innerHTML = g_data[i][1];
+		document.getElementById("sub" + i).innerHTML = g_data[i][2];
+	}
+}
+
+function buildTableHeader()
+{
+	var rowHTML = "<tr>";
+	rowHTML += "<td><b>Hold S</b></td>";
+	rowHTML += "<td><b>Jump</b></td>";
+	rowHTML += "<td><b>Velocity (cpx/f)</b></td>";
+	rowHTML += "<td><b>Position (px)</b></td>";
+	rowHTML += "<td><b>Subpixel Position (cpx)</b></td>";
+	rowHTML += "</tr>";
+	return rowHTML;
+}
+
+function buildTableFirstRow()
+{
+	var rowHTML = "<tr>";
+	rowHTML += "<td/>";
+	rowHTML += "<td/>";
+	rowHTML += "<td><input value=" + start_vel + " type=number oninput=\"start_vel = parseInt(this.value); onTableChange()\"/></td>";
+	rowHTML += "<td><input value=" + start_pos + " type=number oninput=\"start_pos = parseInt(this.value); onTableChange()\"/></td>";
+	rowHTML += "<td><input value=" + start_sub + " type=number oninput=\"start_sub = parseInt(this.value); onTableChange()\"/></td>";
+	rowHTML += "</tr>";
+	return rowHTML;
+}
+
+function buildTableRow(i)
+{
+	var inputChange = "oninput=\"g_input[" + i + "][0] = this.checked; onTableChange()\"";
+	var jumpChange = "oninput=\"g_input[" + i + "][1] = this.checked; onTableChange()\"";
+	var inputState = g_input[i][0] ? "checked" : "";
+	var jumpState = g_input[i][1] ? "checked" : "";
+
+	var rowHTML = "<tr>";
+	rowHTML += "<td><input type=checkbox id=input" + i + " " + inputChange + " " + inputState + "/></td>";
+	rowHTML += "<td><input type=checkbox id=jump" + i + " " + jumpChange + " " + jumpState + "/></td>";
+	rowHTML += "<td><div id=vel" + i + "></div></td>";
+	rowHTML += "<td><div id=pos" + i + "></div></td>";
+	rowHTML += "<td><div id=sub" + i + "></div></td>";
+	rowHTML += "</tr>";
+	return rowHTML;
+}
+
+function buildTable()
+{
+	g_data = [];
+	g_input = [];
+	for(var i = 0; i < g_rows; i++)
+	{
+		g_data.push([0, 0, 0]);
+		g_input.push([0, 0]);
+	}
+
+	var tableHTML = "<table>";
+	tableHTML += buildTableHeader();
+	tableHTML += buildTableFirstRow();
+	for(var i = 1; i < g_rows; i++)
+	{
+		tableHTML += buildTableRow(i);
+	}
+	tableHTML += "</table>";
+	document.getElementById("table").innerHTML = tableHTML;
+
+	document.getElementById("rows").value = g_rows;
+
+	onTableChange();
+}
+
+function resizeTable()
+{
+	var oldSize = g_rows;
+	var newSize = document.getElementById("rows").value;
+
+	if (newSize < oldSize)
+	{
+		var diff = oldSize - newSize;
+		for (var i = 0; i < diff; i++)
+		{
+			g_data.pop();
+			g_input.pop();
+		}
+		document.getElementById("message").innerHTML = "Removed " + diff + " frames.";
+	}
+	else if (newSize > oldSize)
+	{
+		var diff = newSize - oldSize;
+		for (var i = 0; i < diff; i++)
+		{
+			g_data.push([0, 0, 0]);
+			g_input.push([0, 0]);
+		}
+		document.getElementById("message").innerHTML = "Added " + diff + " frames.";
+	}
+
+	g_rows = newSize;
+
+	var tableHTML = "<table>";
+	tableHTML += buildTableHeader();
+	tableHTML += buildTableFirstRow();
+	for(var i = 1; i < g_rows; i++)
+	{
+		tableHTML += buildTableRow(i);
+	}
+	tableHTML += "</table>";
+	document.getElementById("table").innerHTML = tableHTML;
+
+	onTableChange();
+}
+
+function refresh()
+{
+	for (var i = 0; i < g_rows; i++)
+		g_data.push([0, 0, 0]);
+
+	var tableHTML = "<table>";
+	tableHTML += buildTableHeader();
+	tableHTML += buildTableFirstRow();
+	for(var i = 1; i < g_rows; i++)
+	{
+		tableHTML += buildTableRow(i);
+	}
+	tableHTML += "</table>";
+	document.getElementById("table").innerHTML = tableHTML;
+
+	document.getElementById("rows").value = g_rows;
+	document.getElementById("ground").value = g_ground;
+	document.getElementById("ceiling").value = g_ceiling;
+
+	onTableChange();
+}
+
+function preset(n)
+{
+	if (n == 1)
+	{
+		start_vel = 0;
+		if (isNaN(g_ground))
+			g_ground = 161;
+		start_pos = g_ground;
+		start_sub = -100;
+
+		g_input = [];
+		for (var i = 1; i < g_rows; i++)
+			g_input[i] = [true, false];
+		g_input[1] = [false, false];
+		g_input[2] = [false, false];
+		g_input[3] = [true, true];
+	}
+	else if (n == 2)
+	{
+		g_rows = 50;
+		g_ground = 104;
+		start_vel = 0;
+		start_pos = 104;
+		start_sub = -100;
+		document.getElementById("hijump").checked = true;
+
+		g_input = [];
+		for (var i = 1; i < 50; i++)
+			g_input[i] = [true, false];
+		g_input[1] = [false, false];
+		g_input[2] = [false, false];
+		g_input[3] = [true, true];
+		g_input[25] = [false, false];
+		g_input[26] = [true, true];
+		g_input[44] = [false, false];
+	}
+	else if (n == 3)
+	{
+		g_rows = 31;
+		g_ground = 58;
+		start_vel = 0;
+		start_pos = 58;
+		start_sub = -100;
+		document.getElementById("hijump").checked = false;
+
+		g_input = [];
+		for (var i = 1; i < 31; i++)
+			g_input[i] = [true, false];
+		g_input[1] = [false, false];
+		g_input[2] = [false, false];
+		g_input[3] = [true, true];
+		g_input[16] = [false, false];
+		g_input[17] = [true, true];
+	}
+
+	refresh();
+}
+
+
+
+</script>
+</head>
+<body onload="buildTable()">
+
+
+
+<div id="table"></div>
+
+<div style="padding-top: 20px;"/>
+<div>
+	Number of frames:
+	<input type=number id=rows />
+	<button onclick="resizeTable()">Apply</button>
+</div>
+<div>
+	Ground position:
+	<input type=number id=ground oninput="g_ground = parseInt(this.value); onTableChange()" />
+</div>
+<div>
+	Ceiling position:
+	<input type=number id=ceiling oninput="g_ceiling = parseInt(this.value); onTableChange()" />
+</div>
+<div>
+	High jump:
+	<input type=checkbox id=hijump oninput="onTableChange()" checked/>
+</div>
+<div id="message"></div>
+
+<div style="padding-top: 20px;"/>
+Presets:<br/>
+<button onclick="preset(1)">Max distance (single jump)</button><br/>
+<button onclick="preset(3)">Max height (double jump)</button><br/>
+<button onclick="preset(2)">Max height (high jump + double jump)</button><br/>
+
+
+
+</body>
+</html>

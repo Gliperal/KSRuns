@@ -1,0 +1,37 @@
+{
+	"Pages": {
+		"LevelPage": "WEB-INF/levelPage.html",
+		"StackTrace": "WEB-INF/stackTrace.html",
+		"Redirect": "WEB-INF/redirect.html",
+		"Submit": "WEB-INF/submit.html"
+	},
+	"Images": {
+		"Util": "/images/util/",
+		"LevelIcon": "/images/icons/Icon"
+	},
+	"Scripts": {
+		"LoginBar": "/script/loginBar.js",
+		"RunUtil": "/script/runUtil.js",
+		"Verification": "/script/verification.js"
+	},
+	"Style": {
+		"LoginBar": "/style/loginBar.css"
+	},
+	"LevelBackdrops": {
+		"Root": "/images/backgrounds/",
+		"BackdropDefault": [
+			"BackgroundDefault0.png",
+			"BackgroundDefault1.png",
+			"BackgroundDefault2.png",
+			"BackgroundDefault3.png"
+		],
+		"Backdrop4": "Background4.png",
+		"Backdrop5": "Background5.png",
+		"Backdrop8": "Background8.png",
+		"Backdrop13": "Background13.png",
+		"Backdrop18": [
+			{"file": "Background18a.png", "position": "center bottom"},
+			"Background18b.png"
+		]
+	}
+}

@@ -1,0 +1,56 @@
+div.emptyLevelBG
+{
+	height: 30px;
+	background-color: #F5F5F5;
+	border: 1px solid #F5F5F5;
+	padding: 1px;
+}
+
+div.emptyLevelSize
+{
+	width: 230px;
+}
+
+div.levelBG
+{
+	height: 30px;
+	background-color: #EBEBEB;
+	border: 1px solid #979797;
+	padding: 1px;
+}
+
+td.levelName, td.levelDescription
+{
+	font-size: 8pt;
+	font-family: Arial, Helvetica, sans-serif;
+	padding: 0px 5px 4px 5px;
+}
+
+td.levelDescription
+{
+	color: #4B4B4B;
+}
+
+div.levelSizeRestrictor
+{
+	width: 200px;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+
+td.levelColumnSeparator
+{
+	width: 10px;
+}
+
+tr.levelRowSeparator
+{
+	height: 10px;
+}
+
+a.levelLink
+{
+	text-decoration: none;
+	color: inherit;
+}

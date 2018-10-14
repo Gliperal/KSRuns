@@ -1,0 +1,104 @@
+<html>
+<script type='text/javascript'>
+	var LOGIN_USER = null;
+	var LOGIN_SESS = null;
+</script>
+<script type='text/javascript' src='/script/loginBar.js'></script>
+<script type='text/javascript' src='/script/runUtil.js'></script>
+<script type='text/javascript' src='/script/verification.js'></script>
+<script type='text/javascript'>
+
+
+function loadRuns(runs)
+{
+	var numRuns = runs.length;
+	var tableHTML = '<table cellpadding=0 cellspacing=0 width="100%">';
+	var index = 0;
+	while(index < numRuns)
+	{
+		var run = runs[index];
+		tableHTML += '<tr><td width="11%">';
+		tableHTML += run["level"];
+		tableHTML += '</td><td width="11%">';
+		tableHTML += run["category"];
+		tableHTML += '</td><td width="11%">';
+		tableHTML += playerLink(run["player"], run["playerLink"]);
+		tableHTML += '</td><td width="11%">';
+		tableHTML += runTimeToString(run["runTime"]);
+		tableHTML += '</td><td width="11%">';
+		tableHTML += runDateToString(run["date"]);
+		tableHTML += '</td><td width="11%">';
+		tableHTML += videoLink(run["video"]);
+		tableHTML += '</td><td width="11%">';
+		tableHTML += '<button onclick="verify(' + run["id"] + ', true)">Verify</button>';
+		tableHTML += '</td><td width="11%">';
+		tableHTML += '<button onclick="verify(' + run["id"] + ', false)">Reject</button>';
+		tableHTML += '</td></tr>';
+		index++;
+	}
+	tableHTML += '</table>';
+	
+	document.getElementById("runs").innerHTML = tableHTML;
+}
+
+
+function load()
+{
+	if (LOGIN_USER == null || LOGIN_SESS == null)
+	{
+		document.getElementById("runs").innerHTML = "Must be logged in to verify runs. <button onclick=\"load()\">Ok, I'm logged in.</button>";
+		return;
+	}
+	var requestData =
+	{
+			"request": "pending",
+			"user": LOGIN_USER,
+			"sessionID": LOGIN_SESS
+	};
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function()
+	{
+		if (this.readyState == 4 && this.status == 200)
+		{
+			var response = JSON.parse(xhttp.responseText);
+			if ("status" in response)
+			{
+				if (response["status"] == 0)
+					loadRuns(response["runs"]);
+				else
+					document.getElementById("runs").innerHTML = response["message"];
+			}
+			else
+				document.getElementById("runs").innerHTML = "Unknown server response."
+		}
+	};
+	var origin = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+	if (window.location.port == 8080)
+		xhttp.open("POST", origin + "/KSRuns/api/submit", true);
+	else
+		xhttp.open("POST", origin + "/api/submit", true);
+	xhttp.setRequestHeader("Content-type", "application/json");
+	xhttp.send(JSON.stringify(requestData));
+}
+
+
+function init()
+{
+	loginBar_init();
+	load();
+}
+
+
+</script>
+<body onload="init()">
+
+
+
+<div id="loginBar"></div>
+<div id="runs"></div>
+<div id="verificationInfo"></div>
+
+
+
+</body>
+</html>

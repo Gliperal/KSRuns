@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>=WORLDFOLDER=</title>
+	<link rel="icon" href="=PATH(IMAGEUTIL)=Juni.png" type="image/png">
+<link rel="stylesheet" type="text/css" href="=CSS/LOGINBAR=">
+<style>
+
+
+
+html
+{
+	height: 100%;
+}
+
+body
+{
+	font-family: "Trebuchet MS", Helvetica, sans-serif;
+	background-image: url("=LEVELBACKDROP=");
+	background-position: =BACKDROPPOSITION=;
+}
+
+div.main
+{
+	margin-left: auto;
+	margin-right: auto;
+	padding: 10px;
+	background: rgba(255, 255, 255, 0.4);
+}
+
+div.center
+{
+	margin-left: auto;
+	margin-right: auto;
+}
+
+/*** LEVEL HEADER ***/
+
+.clearfix
+{
+	overflow: auto;
+}
+
+img.levelIcon
+{
+	width: 72px;
+	height: 72px;
+	float: left;
+	margin-right: 20px;
+	border: 4px solid #000;
+}
+
+/*** CATEGORIES / RULES ***/
+
+div.categories
+{
+	margin-top: 10px;
+	margin-bottom: 10px;
+	font-size: 12px;
+}
+
+div#categoryButtons
+{
+	display: flex;
+}
+
+div.categoryButton
+{
+	background: rgba(255, 255, 255, 0.2);
+	border-left: 1px solid rgba(0, 0, 0, 0.2);
+	border-top: 1px solid rgba(0, 0, 0, 0.2);
+	border-right: 1px solid rgba(0, 0, 0, 0.2);
+	cursor: pointer;
+
+	display: inline;
+	padding: 2px;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+div.categoryButtonSeparator
+{
+	border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+
+	display: inline-block;
+}
+
+div.categoryButtonSeparator div
+{
+	min-width: 5px;
+}
+
+div.categoryButtonSeparator_last
+{
+	border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+div#categoryDescription
+{
+	background: rgba(255, 255, 255, 0.2);
+	border-left: 1px solid rgba(0, 0, 0, 0.2);
+	border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+	border-right: 1px solid rgba(0, 0, 0, 0.2);
+
+	padding: 5px;
+}
+
+/*** TIMELINE SLIDER ***/
+
+input.timelineSlider
+{
+	width: 100%;
+
+	-webkit-appearance: none;
+	height: 4px;
+	background: rgba(0, 0, 0, 0.2);
+	outline: none;
+}
+
+input.timelineSlider::-webkit-slider-thumb
+{
+	-webkit-appearance: none;
+	appearance: none;
+	width: 12px;
+	height: 21px;
+	border: 0;
+	background: url('=PATH(IMAGEUTIL)=Juni.png');
+	background-repeat: no-repeat;
+	background-position: center; 
+	cursor: pointer;
+}
+
+input.timelineSlider::-moz-range-thumb
+{
+	width: 12px;
+	height: 21px;
+	border: 0;
+	background: url('=PATH(IMAGEUTIL)=Juni.png');
+	background-repeat: no-repeat;
+	background-position: center; 
+	cursor: pointer;
+}
+
+div#timelineInfo
+{
+	text-align: center;
+	font-size: 12px;
+	margin-bottom: 10px;
+}
+
+/*** RUNS TABLE ***/
+
+tr.pending
+{
+	background: rgba(255, 128, 32, 0.5);
+}
+
+a.videoLink:link
+{
+	color: #408;
+	text-decoration: none;
+}
+
+a.playerLink:link
+{
+	color: #408;
+	text-decoration: none;
+}
+
+img.verifyButton:hover
+{
+    cursor: pointer;
+}
+
+/*** VERIFICATION AND SIGN IN STUFF ***/
+
+div#verificationInfo
+{
+	font-size: 12px;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+div.showPendingButton
+{
+	background: rgba(255, 255, 255, 0.4);
+	border: 1px solid rgba(0, 0, 0, 0.4);
+	padding: 2px;
+	cursor: pointer;
+	display: inline;
+}
+
+/*** FOOTER ***/
+
+div.footer
+{
+	position: absolute;
+	bottom: 0;
+	height: 40px;
+}
+
+div.footer-glow
+{
+	padding: 10px;
+	background: rgba(255, 255, 255, 0.2);
+	font-size: 10px;
+}
+
+
+
+</style>
+<script type='text/javascript'>
+	var LOGIN_USER = null;
+	var LOGIN_SESS = null;
+</script>
+<script type='text/javascript' src='=SCRIPTS/LOGINBAR='></script>
+<script type='text/javascript' src='=SCRIPTS/RUNUTIL='></script>
+<script type='text/javascript' src='=SCRIPTS/VERIFICATION='></script>
+<script type='text/javascript'>
+
+
+
+var g_categories;
+var g_allRuns;
+var g_runs;
+var g_keyDates;
+var g_sliderDate;
+var g_keyDatesLength;
+
+function runVerify(runID)
+{
+	var html = '';
+	html += '<abbr title="Verify this run.">';
+	html += '<img src="=PATH(IMAGEUTIL)=greenCheck.png" class="verifyButton" width="16" height="16" onclick="verify(' + runID + ', true)"/>'
+	html += '</abbr><abbr title="Reject this run.">';
+	html += '<img src="=PATH(IMAGEUTIL)=redX.png" class="verifyButton" width="16" height="16" onclick="verify(' + runID + ', false)"/>';
+	html += '</abbr>';
+	return html;
+}
+
+function runsToTable(runs)
+{
+	var numRuns = runs.length;
+	var tableHTML = '<table cellpadding=0 cellspacing=0 width="100%">';
+	var index = 0;
+	while(index < numRuns)
+	{
+		var run = runs[index];
+		if (run.pending == "true")
+			tableHTML += '<tr class="pending">';
+		else
+			tableHTML += '<tr>';
+		tableHTML += '<td width="22%">';
+		tableHTML += playerLink(run.player, run.playerLink);
+		tableHTML += '</td><td width="22%">';
+		tableHTML += runTimeToString(run.runTime);
+		tableHTML += '</td><td width="22%">';
+		tableHTML += runDateToString(run.date);
+		tableHTML += '</td><td width="22%">';
+		tableHTML += videoLink(run.video);
+		if (run.pending == "true")
+			tableHTML += '</td><td width="10%">' + runVerify(run.id);
+		tableHTML += '</td></tr>';
+		index++;
+	}
+	tableHTML += '</table>';
+	
+	return tableHTML;
+}
+
+function updateRunsTable(allDates)
+{
+	// No runs
+	if(g_runs.length == 0)
+	{
+		document.getElementById("runsTable").innerHTML = "<center><img src=\"=PATH(IMAGEUTIL)=FreeWR.png\"/><br/>No one has ever done a run of this category in the history of ever D:</center>";
+		return;
+	}
+
+	g_runs.sort(runComparator_time);
+	var runs = [];
+	var players = [];
+	for(i = 0; i < g_runs.length; i++)
+	{
+		// Throw out runs that are in the future.
+		if(!allDates)
+		{
+			// Throw out runs with an undefined date
+			if(g_runs[i].date == null)
+				continue;
+			// Throw out runs that are in the future.
+			if(g_runs[i].relTime > g_sliderDate)
+				continue;
+		}
+		// Throw out runs that have been beaten by the same person (sorting beforehand ensures the first run is the best).
+		if(players.includes(g_runs[i].player))
+			continue;
+		runs.push(g_runs[i]);
+		players.push(g_runs[i].player);
+	}
+	document.getElementById("runsTable").innerHTML = runsToTable(runs);
+}
+
+function keyDatesInit()
+{
+	g_runs.sort(runComparator_date);
+	
+	g_keyDatesLength = 0;
+	g_keyDates = [];
+	var dateOffset = 0;
+	for(i = 0; i < g_runs.length; i++)
+	{
+		var dateStr = g_runs[i].date;
+		if (dateStr == null)
+			continue;
+		if (g_keyDatesLength == 0)
+		{
+			g_keyDatesLength = 1;
+			g_keyDates.push([0, dateStr]);
+			dateOffset = new Date(dateStr).getTime();
+			
+			g_runs[i].relTime = 0;
+		}
+		else
+		{
+			var relativeTime = new Date(dateStr).getTime() - dateOffset;
+			g_runs[i].relTime = relativeTime;
+			
+			if (relativeTime != g_keyDates[g_keyDatesLength-1][0])
+			{
+				g_keyDatesLength++;
+				g_keyDates.push([relativeTime, dateStr]);
+			}
+		}
+	}
+	// If nothing has a date
+	if (g_keyDatesLength == 0)
+		return;
+	g_sliderDate = g_keyDates[g_keyDatesLength-1][0];
+	g_keyDates[g_keyDatesLength-1][1] = "Present";
+}
+
+function timelineInit()
+{
+	// If nothing has a date
+	if (g_keyDatesLength == 0)
+	{
+		document.getElementById("timelineInfo").innerHTML = "";
+		return;
+	}
+
+	var timeline = document.getElementById("timeline");
+	
+	timeline.min = "0";
+	timeline.max = g_keyDates[g_keyDatesLength-1][0];
+	timeline.value = timeline.max;
+	document.getElementById("timelineInfo").innerHTML = "Viewing from: Present";
+	
+	timeline.oninput = function()
+	{
+		var i;
+		for(i = 0; i < g_keyDatesLength - 1; i++)
+		{
+			if(g_keyDates[i][0] + g_keyDates[i + 1][0] >= 2 * this.value)
+				break;
+		}
+		this.value = g_keyDates[i][0];
+		
+		// Check if the slider has moved enough to update.
+		if(g_sliderDate != this.value)
+		{
+			g_sliderDate = this.value;
+			document.getElementById("timelineInfo").innerHTML = "Viewing from: " + g_keyDates[i][1];
+			updateRunsTable(i == g_keyDatesLength-1);
+		}
+	}
+}
+
+function changeCategory(id)
+{
+	g_runs = g_allRuns[id];
+	
+	keyDatesInit();
+	timelineInit();
+	
+	updateRunsTable(true);
+	
+	document.getElementById("categoryDescription").innerHTML = g_categories[id][1];
+}
+
+function fullRules(id)
+{
+	document.getElementById("categoryDescription").innerHTML = g_categories[id][2];
+}
+
+function addPendingRuns()
+{
+	// If a moderator logs in, add pending runs to the table
+	var requestData =
+	{
+			"request": "allRuns",
+			"user": LOGIN_USER,
+			"sessionID": LOGIN_SESS,
+			"levelCode": "=LEVELCODE="
+	};
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function()
+	{
+		if (this.readyState == 4 && this.status == 200)
+		{
+			var response = JSON.parse(xhttp.responseText);
+			if ("status" in response)
+			{
+				if (response["status"] == 0)
+				{
+					loadRuns(response["runs"]);
+					document.getElementById("verificationInfo").innerHTML = "Now showing unverified runs";
+				}
+				else
+					document.getElementById("verificationInfo").innerHTML = response["message"];
+			}
+			else
+				document.getElementById("verificationInfo").innerHTML = "Unknown server response."
+		}
+	};
+	var origin = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+	if (window.location.port == 8080)
+		xhttp.open("POST", origin + "/KSRuns/api/submit", true);
+	else
+		xhttp.open("POST", origin + "/api/submit", true);
+	xhttp.setRequestHeader("Content-type", "application/json");
+	xhttp.send(JSON.stringify(requestData));
+}
+
+function onLogin()
+{
+	document.getElementById("verificationInfo").innerHTML = '<div class="showPendingButton" onclick="addPendingRuns()">Show unverified runs</div>';
+}
+
+function loadCategories(categoriesJSON)
+{
+	var cats = JSON.parse(categoriesJSON);
+	cats.sort(categoryComparator_id);
+	g_categories = [];
+	for(var i = 0; i < cats.length; i++)
+	{
+		var catRules = "<b>" + cats[i]["category"] + ":</b> " + cats[i]["rulesBrief"];
+		catRules += ' <a href="javascript:void(0)" onclick="fullRules(' + i + ');">Show full rules >></a>';
+		var catShortRules = "<b>" + cats[i]["category"] + ":</b> " + cats[i]["rules"];
+		g_categories.push([cats[i]["category"], catRules, catShortRules]);
+	}
+}
+
+function loadRuns(allRunsRaw)
+{
+	var numRuns = allRunsRaw.length;
+	g_allRuns = [null];
+	
+	var buttonsHTML = "";
+	
+	for(var i = 0; i < numRuns; i++)
+	{
+		g_allRuns[allRunsRaw[i]["id"] - 1] = allRunsRaw[i]["data"];
+		buttonsHTML += '<div class="categoryButtonSeparator"><div></div></div>';
+		buttonsHTML += '<div class="categoryButton" onclick="changeCategory(' + i + ')">' + g_categories[i][0] + '</div>';
+	}
+	buttonsHTML += '<div class="categoryButtonSeparator_last"><div></div></div>';
+	document.getElementById("categoryButtons").innerHTML = buttonsHTML;
+	
+	changeCategory(0);
+}
+
+function init()
+{
+	loginBar_init();
+	loadCategories('=CATEGORIESJSON=');
+	loadRuns(JSON.parse('=RUNSJSON='));
+}
+
+
+
+</script>
+</head>
+<body onload="init()">
+
+
+
+<div id="loginBar"></div>
+<div style="max-width:800px" class="main">
+	<div class="clearfix">
+		<img class="levelIcon" src="=LEVELICON=" onerror="this.onerror=null;this.src='=LEVELICONDEFAULT=';"/>
+		<h1 style="text-align: left;">=WORLDFOLDER=</h1>
+	</div>
+	<div class="center">
+		<div class="categories">
+			<div id="categoryButtons">Loading...<img hspace="5px" src="=PATH(IMAGEUTIL)=JuniRun.gif" alt="nope"/></div>
+			<div id="categoryDescription"></div>
+		</div>
+		<div id="runsTable">Loading...<img hspace="5px" src="=PATH(IMAGEUTIL)=JuniRun.gif" alt="nope"/></div>
+		<input type="range" id="timeline" class="timelineSlider"/>
+		<div id="timelineInfo"></div>
+		<div id="verificationInfo"></div>
+	</div>
+</div>
+
+<div class="footer">
+	<div class="footer-glow">
+		This website is still under development. Please send any bugs/suggestions to Gliperal#3806 on Discord.
+	</div>
+</div>
+
+
+
+</body>
+</html>

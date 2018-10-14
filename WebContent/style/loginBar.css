@@ -1,0 +1,27 @@
+div#loginBar
+{
+	background: rgba(255, 255, 255, 0.4);
+	padding: 5px;
+	margin: 10px 0px;
+	//font-family: "Trebuchet MS", Helvetica, sans-serif;
+	font-family: Arial Narrow, Helvetica, sans-serif;
+	font-size: 12px;
+	text-align: right;
+}
+
+div#loginBar input.textInput
+{
+	margin: 0px 20px 0px 10px;
+	background: rgba(255, 255, 255, 0.7);
+}
+
+div#loginBar input.buttonInput
+{
+	margin-left: 10px;
+}
+
+div#loginBar_error
+{
+	margin-top: 5px;
+	color: #800;
+}

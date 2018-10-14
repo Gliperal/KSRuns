@@ -1,0 +1,58 @@
+<html>
+<script>
+
+
+function create_user()
+{
+	var username = document.getElementById("input_username").value;
+	var password = document.getElementById("input_password").value;
+	if (password != document.getElementById("input_password2").value)
+	{
+		document.getElementById("test").innerHTML = "Passwords don't match.";
+		return;
+	}
+	var requestData =
+	{
+			"request": "create",
+			"user": username,
+			"password": password
+	};
+
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function()
+	{
+		if (this.readyState == 4 && this.status == 200)
+		{
+			document.getElementById("test").innerHTML = xhttp.responseText;
+		}
+	};
+	var origin = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+	if (window.location.port == 8080)
+		xhttp.open("POST", origin + "/KSRuns/api/login", true);
+	else
+		xhttp.open("POST", origin + "/api/login", true);
+	xhttp.setRequestHeader("Content-type", "application/json");
+	xhttp.send(JSON.stringify(requestData));
+}
+
+
+</script>
+<body>
+
+
+
+<div>
+	Create new user</br>
+	Username: <input type="text" id="input_username"/><br/>
+	Password: <input type="password" id="input_password"/><br/>
+	Confirm password: <input type="password" id="input_password2"/><br/>
+	<button onclick="create_user()">Go</button>
+</div>
+<div id="test">
+	hi
+</div>
+
+
+
+</body>
+</html>
