@@ -12,7 +12,8 @@
 	"Scripts": {
 		"LoginBar": "/script/loginBar.js",
 		"RunUtil": "/script/runUtil.js",
-		"Verification": "/script/verification.js"
+		"Verification": "/script/verification.js",
+		"SubmitPage": "/script/submitPage.js"
 	},
 	"Style": {
 		"LoginBar": "/style/loginBar.css"

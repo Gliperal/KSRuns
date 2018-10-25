@@ -12,7 +12,8 @@
 	"Scripts": {
 		"LoginBar": "/KSRuns/script/loginBar.js",
 		"RunUtil": "/KSRuns/script/runUtil.js",
-		"Verification": "/KSRuns/script/verification.js"
+		"Verification": "/KSRuns/script/verification.js",
+		"SubmitPage": "/KSRuns/script/submitPage.js"
 	},
 	"Style": {
 		"LoginBar": "/KSRuns/style/loginBar.css"

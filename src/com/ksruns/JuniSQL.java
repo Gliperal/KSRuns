@@ -193,46 +193,27 @@ public class JuniSQL
 		return true;
 	}
 	
-	protected static int addPendingRun(int playerID, int levelID, int categoryID, int time, Date date, String video)
+	protected static void addPendingRun(int playerID, int levelID, int categoryID, int time, Date date, String video) throws SQLException
 	{
-		try
-		{
-			PreparedStatement statement = databaseConnection().prepareStatement(addPendingRunQuery);
-			statement.setInt(1, levelID);
-			statement.setInt(2, categoryID);
-			statement.setInt(3, playerID);
-			statement.setInt(4, time);
-			statement.setDate(5, date);
-			statement.setString(6, video); // TODO does this work if video is null?
-			statement.executeUpdate();
-		}
-		catch(SQLException e)
-		{
-			// TODO
-			e.printStackTrace();
-			return 1;
-		}
-		return 0;
+		PreparedStatement statement = databaseConnection().prepareStatement(addPendingRunQuery);
+		statement.setInt(1, levelID);
+		statement.setInt(2, categoryID);
+		statement.setInt(3, playerID);
+		statement.setInt(4, time);
+		statement.setDate(5, date);
+		statement.setString(6, video); // TODO does this work if video is null?
+		statement.executeUpdate();
 	}
 	
-	protected static int getPlayerID(String username)
+	protected static int getPlayerID(String username) throws SQLException
 	{
-		try
-		{
-			PreparedStatement statement = databaseConnection().prepareStatement(playerIDQuery);
-			statement.setString(1, username);
-			ResultSet result = statement.executeQuery();
-			if (result.next())
-				return result.getInt(1);
-			else
-				return -1;
-		}
-		catch(SQLException e)
-		{
-			// TODO
-			e.printStackTrace();
-			return -2;
-		}
+		PreparedStatement statement = databaseConnection().prepareStatement(playerIDQuery);
+		statement.setString(1, username);
+		ResultSet result = statement.executeQuery();
+		if (result.next())
+			return result.getInt(1);
+		else
+			return -1;
 	}
 	
 	protected static boolean verifyPendingRun(int pendingRunID) throws SQLException

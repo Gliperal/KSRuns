@@ -32,6 +32,7 @@ public class SubmitPageServlet extends HttpServlet
 			JSONArray categoriesByLevel = HennaSQL.fetchCategoriesByLevelJSON();
 			html = html.replaceAll("=ALLCATEGORIESJSON=", categoriesByLevel.toString());
 			html = html.replaceAll("=SCRIPTS/LOGINBAR=", Properties.getScript("LoginBar"));
+			html = html.replaceAll("=SCRIPTS/SUBMITPAGE=", Properties.getScript("SubmitPage"));
 			html = html.replaceAll("=CSS/LOGINBAR=", Properties.getStyle("LoginBar"));
 		}
 		catch (SQLException e)

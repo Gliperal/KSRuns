@@ -55,211 +55,94 @@ div.lol
 	var LOGIN_SESS = null;
 </script>
 <script type='text/javascript' src='=SCRIPTS/LOGINBAR='></script>
+<script type='text/javascript' src='=SCRIPTS/SUBMITPAGE='></script>
 <script type='text/javascript'>
 
 
-function levelCmp(levelA, levelB)
-{
-	var nameA = levelA["name"];
-	var nameB = levelB["name"];
-	return nameA.localeCompare(nameB);
-}
-
-
 var g_categoriesByLevel;
+var categoriesByLevelJSON = '=ALLCATEGORIESJSON=';
 
-function catCmp(catA, catB)
+
+function changeForm(form)
 {
-	return catA["id"] - catB["id"];
-}
-
-
-function sortStuff()
-{
-	// alphabetize levels
-	g_categoriesByLevel.sort(levelCmp);
-	
-	// order categories by ID
-	for(var i = 0; i < g_categoriesByLevel.length; i++)
+	if (form == 0)
+		document.getElementById("submissionForm").innerHTML =
+		`
+			<abbr title="Short lowercase string for use in URLs.">Code:</abbr><br/>
+				<input class="inputData" id="input_code" type="text"></input>
+			Name:<br/>
+				<input class="inputData" id="input_name" type="text"></input>
+			Author:<br/>
+				<input class="inputData" id="input_author" type="text"></input>
+			Description:<br/>
+				<input class="inputData" id="input_desc" type="text"></input>
+			Download URL:<br/>
+				<input class="inputData" id="input_download" type="text"></input>
+			<button onclick="submit_level()">Do the thing!</button>
+		`;
+	else if (form == 1)
 	{
-		var level = g_categoriesByLevel[i];
-		var categories = level["categories"];
-		categories.sort(catCmp);
+		document.getElementById("submissionForm").innerHTML =
+		`
+			Level:<br/>
+				<select class="inputData" id="select_level"></select>
+				<br/>
+			Category name:<br/>
+				<input class="inputData" id="input_category" type="text"></input>
+			Win condition:<br/>
+				<select class="inputData" id="select_victory" onchange="updateWinCondition()">
+					<option>WIN Tile</option>
+					<option>Cutscene</option>
+					<option>Other</option>
+				</select>
+			<div id="victoryType">WIN cutscene (optional):</div>
+				<input class="inputData" id="input_victory" type="text"></input>
+			Difficulty setting (optional):<br/>
+				<input class="inputData" id="input_difficulty" type="text"></input>
+			<input type="checkbox" id="input_cheating"> Cheats allowed<br/>
+			Start timing (optional):
+				<input class="inputData" id="input_time_start" type="text"></input>
+			End timing (optional):
+				<input class="inputData" id="input_time_end" type="text"></input>
+			Additional rules (optional):
+				<input class="inputData" id="input_more_rules" type="text"></input>
+			<button onclick="submit_cat()">Do the thing!</button>
+		`;
+		loadInputFields();
 	}
-}
-
-
-function loadInputFields()
-{
-	var categoriesByLevelJSON = '=ALLCATEGORIESJSON=';
-	g_categoriesByLevel = JSON.parse(categoriesByLevelJSON);
-	
-	sortStuff();
-	
-	var levelSelect = document.getElementById("select_level");
-
-	// Default level (empty)
-	var x = document.createElement("option");
-	x.text = "-";
-	levelSelect.add(x);
-
-	// The rest
-	for(var i = 0; i < g_categoriesByLevel.length; i++)
+	else if (form == 2)
 	{
-		var level = g_categoriesByLevel[i];
-		var x = document.createElement("option");
-		x.text = level["name"];
-		levelSelect.add(x);
-	}
-
-	// Time selection
-	var timerH = document.getElementById("select_time_hrs");
-	for( var i = 0; i < 24; i++)
-	{
-		var x = document.createElement("option");
-		x.text = i;
-		timerH.add(x);
-	}
-
-	var timerM = document.getElementById("select_time_mins");
-	var timerS = document.getElementById("select_time_secs");
-	for( var i = 0; i < 60; i++)
-	{
-		var x = document.createElement("option");
-		x.text = i;
-		timerM.add(x);
-		x = document.createElement("option");
-		x.text = i;
-		timerS.add(x);
-	}
-
-	// Date selection
-	var dateInput = document.getElementById("input_date");
-	var today = new Date();
-	var year = today.getFullYear();
-	var month = today.getMonth() + 1;
-	var day = today.getDate();
-	if (month < 10)
-		month = "0" + month;
-	if (day < 10)
-		day = "0" + day;
-	dateInput.value = year + "-" + month + "-" + day;
-}
-
-
-function updateLevel()
-{
-	// Load elements
-	var levelSelect = document.getElementById("select_level");
-	var catSelect = document.getElementById("select_category");
-	
-	// Delete all options
-	catSelect.innerHTML = "";
-	
-	// Load categories
-	if (levelSelect.selectedIndex == 0)
-		return;
-	var level = g_categoriesByLevel[levelSelect.selectedIndex-1];
-	var categories = level["categories"];
-	
-	// Default category (empty)
-	var x = document.createElement("option");
-	x.text = "-";
-	catSelect.add(x);
-
-	// The rest
-	for(var i = 0; i < categories.length; i++)
-	{
-		var cat = categories[i];
-		var x = document.createElement("option");
-		x.text = cat["category"];
-		catSelect.add(x);
+		document.getElementById("submissionForm").innerHTML =
+		`
+			Level:<br/>
+				<select class="inputData" id="select_level" onchange="updateLevel()"></select>
+			Category:<br/>
+				<select class="inputData" id="select_category"></select>
+			Time:<br/>
+				<select class="inputTime" id="select_time_hrs"></select> :
+				<select class="inputTime" id="select_time_mins"></select> :
+				<select class="inputTime" id="select_time_secs"></select>
+			Date:<br/>
+				<input class="inputData" id="input_date" type="date"></input>
+			Video:<br/>
+				<input class="inputData" id="input_video" type="text"></input>
+			<input type="checkbox" checked> Sell your soul to Sinrevah<br/>
+			<button onclick="submit_run()">Do the thing!</button>
+		`;
+		loadInputFields();
 	}
 }
 
 
-function submit()
+function updateWinCondition()
 {
-	if (LOGIN_USER == null)
-	{
-		document.getElementById("test").innerHTML = "You must be logged in to submit runs."
-		return;
-	}
-	
-	var levelSelect = document.getElementById("select_level");
-	var catSelect = document.getElementById("select_category");
-	if (levelSelect.selectedIndex == 0)
-	{
-		document.getElementById("test").innerHTML = "Please select a level."
-		return;
-	}
-	if (catSelect.selectedIndex == 0)
-	{
-		document.getElementById("test").innerHTML = "Please select a category."
-		return;
-	}
-	
-	var timerH = document.getElementById("select_time_hrs");
-	var timerM = document.getElementById("select_time_mins");
-	var timerS = document.getElementById("select_time_secs");
-	var time = timerH.selectedIndex*3600 + timerM.selectedIndex*60 + timerS.selectedIndex;
-	if (time == 0)
-	{
-		document.getElementById("test").innerHTML = "Please input a time."
-		return;
-	}
-	
-	var level = g_categoriesByLevel[levelSelect.selectedIndex-1];
-	var levelID = level["id"];
-	var categories = level["categories"];
-	var cat = categories[catSelect.selectedIndex-1];
-	var catID = cat["id"];
-	var date = document.getElementById("input_date").value;
-	var video = document.getElementById("input_video").value;
-	
-	// Submit new level to database
-	var requestData =
-	{
-			"request": "submit",
-			"user": LOGIN_USER,
-			"sessionID": LOGIN_SESS,
-			"levelID": levelID,
-			"categoryID": catID,
-			"time": time,
-			"date": date
-	};
-	if (video != "")
-		requestData["video"] = video;
-	var xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function()
-	{
-		if (this.readyState == 4 && this.status == 200)
-		{
-			processSubmit(xhttp.responseText);
-		}
-	};
-	var origin = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-	if (window.location.port == 8080)
-		xhttp.open("POST", origin + "/KSRuns/api/submit", true);
-	else
-		xhttp.open("POST", origin + "/api/submit", true);
-	xhttp.setRequestHeader("Content-type", "application/json");
-	xhttp.send(JSON.stringify(requestData));
-}
-
-
-function processSubmit(responseStr)
-{
-	var response = JSON.parse(responseStr);
-	if ("status" in response)
-		document.getElementById("test").innerHTML = response["message"];
-}
-
-
-function init()
-{
-	loginBar_init();
-	loadInputFields();
+	var victory = document.getElementById("select_victory").value;
+	if (victory == "WIN Tile")
+		document.getElementById("victoryType").innerHTML = "WIN cutscene (optional):";
+	else if (victory == "Cutscene")
+		document.getElementById("victoryType").innerHTML = "Shift cutscene (optional):";
+	else if (victory == "Other")
+		document.getElementById("victoryType").innerHTML = "Please specify win condition:";
 }
 
 
@@ -270,29 +153,11 @@ function init()
 
 
 <div id="loginBar"></div>
-<div class="main">
-	Level:<br/>
-		<select class="inputData" id="select_level" onchange="updateLevel()"></select>
-		<br/>
-	Category:<br/>
-		<select class="inputData" id="select_category"></select>
-		<br/>
-	Time:<br/>
-		<select class="inputTime" id="select_time_hrs"></select> :
-		<select class="inputTime" id="select_time_mins"></select> :
-		<select class="inputTime" id="select_time_secs"></select>
-		<br/>
-	Date:<br/>
-		<input class="inputData" id="input_date" type="date"></input>
-		<br/>
-	Video:<br/>
-		<input class="inputData" id="input_video" type="text"></input>
-		<br/>
-	<input type="checkbox" checked> Sell your soul to Sinrevah<br/>
-	<button onclick="submit()">Do the thing!</button>
-	<div id="test">
-	</div>
-</div>
+<button onclick="changeForm(0)">Submit a Level</button>
+<button onclick="changeForm(1)">Submit a Category</button>
+<button onclick="changeForm(2)">Submit a Run</button>
+<div id="submissionForm" class="main"></div>
+<div id="error"></div>
 <div class="lol">look at this pretty blue background wow it's so pretty and blue</div>
 
 

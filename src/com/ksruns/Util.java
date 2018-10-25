@@ -1,11 +1,15 @@
 package com.ksruns;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.io.IOUtils;
+import org.json.JSONObject;
 
 public class Util
 {
@@ -72,5 +76,15 @@ public class Util
 		e.printStackTrace(pw);
 		String sStackTrace = sw.toString(); // stack trace as a string
 		return sStackTrace;
+	}
+	
+	public static JSONObject readJSONData(HttpServletRequest req) throws IOException
+	{
+		String requestData = "";
+		String line;
+		BufferedReader br = req.getReader();
+		while((line = br.readLine()) != null)
+			requestData += line;
+		return new JSONObject(requestData);
 	}
 }

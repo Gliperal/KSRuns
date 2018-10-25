@@ -1,7 +1,5 @@
 package com.ksruns;
 
-import java.io.BufferedReader;
-import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -22,58 +20,58 @@ public class SubmitServlet extends HttpServlet
 	
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, java.io.IOException
 	{
-		JSONObject response = new JSONObject();
+		JSONObject data = Util.readJSONData(req);
+		Response response = new Response();
 		
-		// read data from request
-		String requestData = "";
-		String line;
-		BufferedReader br = req.getReader();
-		while((line = br.readLine()) != null)
-			requestData += line;
-		JSONObject data = new JSONObject(requestData);
-		
-		if (!data.has("request"))
+		try
 		{
-			response.put("status", -1);
-			response.put("message", "Missing request type.");
-		}
-		else if (data.get("request").equals("submit"))
-			submit(data, response);
-		else if (data.get("request").equals("verify"))
-		{
-			boolean verifyOrReject = false;
-			try
+			if (!data.has("request"))
+				response.setStatus(ResponseStatus.missing_type);
+			else if (data.get("request").equals("submit-level"))
+				submitLevel(data, response);
+			else if (data.get("request").equals("submit-category"))
+				submitCategory(data, response);
+			else if (data.get("request").equals("submit-run"))
+				submitRun(data, response);
+			else if (data.get("request").equals("verify-run"))
 			{
-				if (data.has("verify"))
-					verifyOrReject = data.getBoolean("verify");
-			} catch (JSONException e) {}
-			processRun(data, response, verifyOrReject);
+				boolean verifyOrReject = false;
+				try
+				{
+					if (data.has("verify"))
+						verifyOrReject = data.getBoolean("verify");
+				} catch (JSONException e) {}
+				processRun(data, response, verifyOrReject);
+			}
+			else if (data.get("request").equals("pending-run"))
+				pending(data, response);
+			else if (data.get("request").equals("allRuns"))
+				allRunsIncludingPending(data, response);
+			else
+				response.setStatus(ResponseStatus.unknown_type);
 		}
-		else if (data.get("request").equals("pending"))
-			pending(data, response);
-		else if (data.get("request").equals("allRuns"))
-			allRunsIncludingPending(data, response);
-		else
+		catch (SQLException e)
 		{
-			response.put("status", -2);
-			response.put("message", "Unknown request type.");
+			response.setStatus(ResponseStatus.sql_error);
 		}
 		
-		// JSON to string
-		String returnJSON = response.toString();
-		
-		// write response headers
-		resp.setContentType("application/json"); // uses MIME type
-		resp.setContentLength(returnJSON.length());
-		
-		// get the response's writer / output stream
-		PrintWriter out = resp.getWriter();
-		
-		// write the response data
-	    out.println(returnJSON);
+		// Send response back to servlet
+		response.writeToServletResponse(resp);
 	}
 	
-	private void submit(JSONObject data, JSONObject response)
+	private void submitLevel(JSONObject data, Response response) throws SQLException
+	{
+		System.out.println(data.toString());
+		// TODO
+	}
+	
+	private void submitCategory(JSONObject data, Response response) throws SQLException
+	{
+		System.out.println(data.toString());
+		// TODO
+	}
+	
+	private void submitRun(JSONObject data, Response response) throws SQLException
 	{
 		// validate session
 		if (
@@ -82,20 +80,11 @@ public class SubmitServlet extends HttpServlet
 				|| !(data.get("user") instanceof String)
 				|| !(data.get("sessionID") instanceof String)
 		)
-		{
-			response.put("status", 1);
-			response.put("message", "Missing username and/or sessionID.");
-		}
+			response.setStatus(ResponseStatus.missing_info, "Missing username and/or sessionID.");
 		else if (!JuniSQL.verifySession(data.getString("user"), data.getString("sessionID")))
-		{
-			response.put("status", 2);
-			response.put("message", "Invalid sessionID.");
-		}
+			response.setStatus(ResponseStatus.bad_session_id);
 		else if (!data.has("levelID") || !data.has("categoryID") || !data.has("time") || !data.has("date"))
-		{
-			response.put("status", 3);
-			response.put("message", "Missing information.");
-		}
+			response.setStatus(ResponseStatus.missing_info);
 		else
 		{
 			String video = data.has("video") ? data.getString("video") : null;
@@ -104,40 +93,21 @@ public class SubmitServlet extends HttpServlet
 			{
 				int playerID = JuniSQL.getPlayerID(data.getString("user"));
 				if (playerID == -1)
-				{
-					response.put("status", 6);
-					response.put("message", "No associated player profile.");
-				}
-				else if (playerID == -2)
-				{
-					response.put("status", 7);
-					response.put("message", "SQL Error.");
-				}
+					response.setStatus(ResponseStatus.bad_player);
 				else
 				{
 					date = new SimpleDateFormat("yyyy-MM-dd").parse(data.getString("date"));
-					int status = JuniSQL.addPendingRun(playerID, data.getInt("levelID"), data.getInt("categoryID"), data.getInt("time"), new java.sql.Date(date.getTime()), video);
-					if (status == 0)
-					{
-						response.put("status", 0);
-						response.put("message", "Successfully added run to pending runs list.");
-					}
-					else
-					{
-						response.put("status", 5);
-						response.put("message", "SQL Error.");
-					}
+					JuniSQL.addPendingRun(playerID, data.getInt("levelID"), data.getInt("categoryID"), data.getInt("time"), new java.sql.Date(date.getTime()), video);
 				}
 			}
 			catch (JSONException | ParseException e)
 			{
-				response.put("status", 4);
-				response.put("message", "Failed to parse date.");
+				response.setStatus(ResponseStatus.bad_format);
 			}
 		}
 	}
 	
-	private void processRun(JSONObject data, JSONObject response, boolean verify)
+	private void processRun(JSONObject data, Response response, boolean verify) throws SQLException
 	{
 		if (
 				!data.has("user")
@@ -145,30 +115,14 @@ public class SubmitServlet extends HttpServlet
 				|| !(data.get("user") instanceof String)
 				|| !(data.get("sessionID") instanceof String)
 		)
-		{
-			response.put("status", 1);
-			response.put("message", "Missing username and/or sessionID.");
-		}
+			response.setStatus(ResponseStatus.missing_info, "Missing username and/or sessionID.");
 		else if (!JuniSQL.verifySession(data.getString("user"), data.getString("sessionID"), 1))
-		{
-			response.put("status", 2);
-			response.put("message", "Invalid permissions.");
-		}
+			response.setStatus(ResponseStatus.bad_permissions);
 		else
 		{
-			int pendingRunID = -1;
 			try
 			{
-				pendingRunID = data.getInt("pendingRunID");
-			}
-			catch(Exception e)
-			{
-				response.put("status", 3);
-				response.put("message", "Bad or missing pendingRunID.");
-				return;
-			}
-			try
-			{
+				int pendingRunID = data.getInt("pendingRunID");
 				boolean success = false;
 				if (verify)
 					success = JuniSQL.verifyPendingRun(pendingRunID);
@@ -176,26 +130,22 @@ public class SubmitServlet extends HttpServlet
 					success = JuniSQL.rejectPendingRun(pendingRunID);
 				if (success)
 				{
-					response.put("status", 0);
 					if (verify)
-						response.put("message", "Run successfully verified.");
+						response.setStatus(ResponseStatus.success, "Run successfully verified.");
 					else
-						response.put("message", "Run successfully rejected.");
+						response.setStatus(ResponseStatus.success, "Run successfully rejected.");
 				}
 				else
-				{
-					response.put("status", 4);
-					response.put("message", "Invalid run ID.");
-				}
-			} catch (SQLException e)
+					response.setStatus(ResponseStatus.bad_info, "Invalid run ID.");
+			}
+			catch(Exception e)
 			{
-				response.put("status", 5);
-				response.put("message", "SQL Error.");
+				response.setStatus(ResponseStatus.bad_info, "Bad or missing pendingRunID.");
 			}
 		}
 	}
 	
-	private void pending(JSONObject data, JSONObject response)
+	private void pending(JSONObject data, Response response) throws SQLException
 	{
 		if (
 				!data.has("user")
@@ -203,34 +153,18 @@ public class SubmitServlet extends HttpServlet
 				|| !(data.get("user") instanceof String)
 				|| !(data.get("sessionID") instanceof String)
 		)
-		{
-			response.put("status", 1);
-			response.put("message", "Missing username and/or sessionID.");
-		}
+			response.setStatus(ResponseStatus.missing_info, "Missing username and/or sessionID.");
 		else if (!JuniSQL.verifySession(data.getString("user"), data.getString("sessionID"), 1))
-		{
-			response.put("status", 2);
-			response.put("message", "Invalid permissions.");
-		}
+			response.setStatus(ResponseStatus.bad_permissions);
 		else
 		{
-			try
-			{
-				JSONArray pendingRuns = HennaSQL.fetchPendingRuns();
-				response.put("status", 0);
-				response.put("message", "Runs retrieved successfully.");
-				response.put("runs", pendingRuns);
-			}
-			catch (SQLException e)
-			{
-				e.printStackTrace();
-				response.put("status", 3);
-				response.put("message", "SQL Error.");
-			}
+			JSONArray pendingRuns = HennaSQL.fetchPendingRuns();
+			response.setStatus(ResponseStatus.success, "Runs retrieved successfully.");
+			response.put("runs", pendingRuns);
 		}
 	}
 	
-	private void allRunsIncludingPending(JSONObject data, JSONObject response)
+	private void allRunsIncludingPending(JSONObject data, Response response) throws SQLException
 	{
 		if (
 				!data.has("user")
@@ -238,37 +172,19 @@ public class SubmitServlet extends HttpServlet
 				|| !(data.get("user") instanceof String)
 				|| !(data.get("sessionID") instanceof String)
 		)
-		{
-			response.put("status", 1);
-			response.put("message", "Missing username and/or sessionID.");
-		}
+			response.setStatus(ResponseStatus.missing_info, "Missing username and/or sessionID.");
 		else if (!JuniSQL.verifySession(data.getString("user"), data.getString("sessionID"), 1))
-		{
-			response.put("status", 2);
-			response.put("message", "Invalid permissions.");
-		}
+			response.setStatus(ResponseStatus.bad_permissions);
 		else
 		{
 			if (data.has("levelCode") && data.get("levelCode") instanceof String)
 			{
-				try
-				{
-					JSONArray allRuns = HennaSQL.fetchRunsByCategory(data.getString("levelCode"), true, true);
-					response.put("status", 0);
-					response.put("message", "Runs retrieved successfully.");
-					response.put("runs", allRuns);
-				}
-				catch (SQLException e)
-				{
-					response.put("status", 3);
-					response.put("message", "SQL Error.");
-				}
+				JSONArray allRuns = HennaSQL.fetchRunsByCategory(data.getString("levelCode"), true, true);
+				response.setStatus(ResponseStatus.success, "Runs retrieved successfully.");
+				response.put("runs", allRuns);
 			}
 			else
-			{
-				response.put("status", 4);
-				response.put("message", "Missing level code.");
-			}
+				response.setStatus(ResponseStatus.missing_info, "Missing level code.");
 		}
 	}
 }
