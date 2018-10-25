@@ -18,15 +18,7 @@ public class Properties
 	
 	public static void initialize(ServletContext sc) throws IOException
 	{
-		JSONObject data;
-		try
-		{
-			data = new JSONObject(Util.inputStreamToString(sc.getResourceAsStream("WEB-INF/properties_web.txt")));
-		}
-		catch(Exception e)
-		{
-			data = new JSONObject(Util.inputStreamToString(sc.getResourceAsStream("WEB-INF/properties.txt")));
-		}
+		JSONObject data = new JSONObject(Util.inputStreamToString(sc.getResourceAsStream("WEB-INF/properties.txt")));
 		pages = data.getJSONObject("Pages");
 		images = data.getJSONObject("Images");
 		levelBackdrops = data.getJSONObject("LevelBackdrops");
