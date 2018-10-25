@@ -32,25 +32,23 @@ public class JuniSQL
 			"WHERE Username = ?" +
 			"AND SessionID = ?";
 	private static final String addPendingRunQuery =
-			"INSERT INTO Pending_runs " +
-			"(LevelID, CategoryID, PlayerID, RunTime, Date, Video) " +
-			"VALUES (?, ?, ?, ?, ?, ?)";
+			"INSERT INTO Runs " +
+			"(LevelID, CategoryID, PlayerID, RunTime, Date, Video, Verified) " +
+			"VALUES (?, ?, ?, ?, ?, ?, 0)";
 	private static final String playerIDQuery =
 			"SELECT ID " +
 			"FROM Players " +
 			"WHERE Name = ?";
 	private static final String verifyRunQuery0 =
 			"SELECT * " + 
-			"FROM Pending_runs " + 
+			"FROM Runs " + 
+			"WHERE ID = ? AND Verified IS NULL OR Verified = 0";
+	private static final String verifyRunQuery =
+			"UPDATE Runs " +
+			"SET Verified = 1 " +
 			"WHERE ID = ?";
-	private static final String verifyRunQuery1 =
-			"INSERT INTO Runs " +
-			"(LevelID, CategoryID, PlayerID, RunTime, Date, Video) " + 
-			"SELECT LevelID, CategoryID, PlayerID, RunTime, Date, Video " + 
-			"FROM Pending_runs " + 
-			"WHERE ID = ?";
-	private static final String verifyRunQuery2 =
-			"DELETE FROM Pending_runs " +
+	private static final String rejectRunQuery =
+			"DELETE FROM Runs " +
 			"WHERE ID = ?";
 	
 	private static Connection databaseConnection() throws SQLException
@@ -246,13 +244,8 @@ public class JuniSQL
 		if (!pendingRun.next())
 			return false;
 		
-		// Add that run to the runs table
-		statement = databaseConnection().prepareStatement(verifyRunQuery1);
-		statement.setInt(1, pendingRunID);
-		statement.executeUpdate();
-		
-		// Delete it from the pending runs table
-		statement = databaseConnection().prepareStatement(verifyRunQuery2);
+		// Verify the run
+		statement = databaseConnection().prepareStatement(verifyRunQuery);
 		statement.setInt(1, pendingRunID);
 		statement.executeUpdate();
 		return true;
@@ -266,9 +259,9 @@ public class JuniSQL
 		ResultSet pendingRun = statement.executeQuery();
 		if (!pendingRun.next())
 			return false;
-
+		
 		// Delete it from the pending runs table
-		statement = databaseConnection().prepareStatement(verifyRunQuery2);
+		statement = databaseConnection().prepareStatement(rejectRunQuery);
 		statement.setInt(1, pendingRunID);
 		statement.executeUpdate();
 		return true;

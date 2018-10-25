@@ -37,7 +37,7 @@ public class LevelsServlet extends HttpServlet
 			Connection connection = HennaSQL.databaseConnection();
 			
 			// Make the query
-			String selectSQL = "SELECT ID, Code, Author, Name, Description FROM Levels";
+			String selectSQL = "SELECT ID, Code, Author, Name, Description FROM Levels WHERE Verified = 1";
 			PreparedStatement statement = connection.prepareStatement(selectSQL);
 			ResultSet result = statement.executeQuery();
 

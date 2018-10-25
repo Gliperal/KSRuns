@@ -17,7 +17,7 @@ public class HennaSQL
 			"FROM Runs " +
 			"RIGHT JOIN Players " +
 			"ON Players.ID=Runs.PlayerID " +
-			"WHERE LevelID=? AND CategoryID=? " +
+			"WHERE Runs.LevelID=? AND Runs.CategoryID=? AND Runs.Verified=1 " +
 			"ORDER BY Runs.RunTime, Runs.Date";
 	private static final String runsQuery_levelCode =
 			"SELECT Runs.RunTime, Players.Name, Players.Link, Runs.Date, Runs.Video " +
@@ -26,7 +26,7 @@ public class HennaSQL
 			"ON Players.ID=Runs.PlayerID " +
 			"RIGHT JOIN Levels " +
 			"ON Levels.ID=Runs.LevelID " +
-			"WHERE Levels.Code=? AND CategoryID=? " +
+			"WHERE Levels.Code=? AND Runs.CategoryID=? AND Runs.Verified=1 " +
 			"ORDER BY Runs.RunTime, Runs.Date";
 	private static final String categoriesQuery_levelID =
 			"SELECT ID, Category, Victory, Difficulty, Cheats, TimingStart, TimingEnd, MoreRules " +
@@ -41,7 +41,7 @@ public class HennaSQL
 	private static final String levelQuery =
 			"SELECT ID, Author, Name, Description, Download " +
 			"FROM Levels " +
-			"WHERE Code=?";
+			"WHERE Code=? AND Verified=1";
 	private static final String allCategoriesQuery =
 			"SELECT Levels.ID, Levels.Author, Levels.Name, Categories.ID, Categories.Category, Categories.Difficulty " +
 			"FROM Levels " +
@@ -49,24 +49,25 @@ public class HennaSQL
 			"ON Levels.ID = Categories.LevelID " +
 			"ORDER BY Levels.ID";
 	private static final String pendingRunsQuery =
-			"SELECT Pending_runs.ID, Pending_runs.RunTime, Players.Name, Players.Link, Pending_runs.Date, Pending_runs.Video, " +
+			"SELECT Runs.ID, Runs.RunTime, Players.Name, Players.Link, Runs.Date, Runs.Video, " +
 					"Levels.Author, Levels.Name, " +
 					"Categories.Category, Categories.Difficulty " +
-			"FROM Pending_runs " +
+			"FROM Runs " +
 			"LEFT JOIN Players " +
-			"ON Players.ID=Pending_runs.PlayerID " +
+			"ON Players.ID=Runs.PlayerID " +
 			"LEFT JOIN Levels " +
-			"ON Levels.ID=Pending_runs.LevelID " +
+			"ON Levels.ID=Runs.LevelID " +
 			"LEFT JOIN Categories " +
-			"ON Categories.LevelID=Pending_runs.LevelID AND Categories.ID=Pending_runs.CategoryID";
+			"ON Categories.LevelID=Runs.LevelID AND Categories.ID=Runs.CategoryID " + 
+			"WHERE Levels.Verified=1 AND Runs.Verified IS NULL OR Runs.Verified=0";
 	private static final String pendingRunsQuery_levelCode =
-			"SELECT Pending_runs.ID, Pending_runs.RunTime, Players.Name, Players.Link, Pending_runs.Date, Pending_runs.Video " +
-			"FROM Pending_runs " +
+			"SELECT Runs.ID, Runs.RunTime, Players.Name, Players.Link, Runs.Date, Runs.Video " +
+			"FROM Runs " +
 			"RIGHT JOIN Players " +
-			"ON Players.ID=Pending_runs.PlayerID " +
+			"ON Players.ID=Runs.PlayerID " +
 			"RIGHT JOIN Levels " +
-			"ON Levels.ID=Pending_runs.LevelID " +
-			"WHERE Levels.Code=? AND CategoryID=?";
+			"ON Levels.ID=Runs.LevelID " +
+			"WHERE Levels.Code=? AND Levels.Verified=1 AND CategoryID=? AND Runs.Verified IS NULL OR Runs.Verified=0";
 	
 	// TODO make this private again
 	static Connection databaseConnection() throws SQLException
