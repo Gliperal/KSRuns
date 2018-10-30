@@ -198,7 +198,15 @@ public class HennaSQL
 		}
 		return null;
 	}
-
+	
+	public static boolean levelExists(String code) throws SQLException
+	{
+		PreparedStatement statement = databaseConnection().prepareStatement(levelQuery);
+		statement.setString(1, code);
+		ResultSet result = statement.executeQuery();
+		return result.next();
+	}
+	
 	public static JSONArray fetchCategoriesByLevelJSON() throws SQLException
 	{
 		PreparedStatement statement = databaseConnection().prepareStatement(allCategoriesQuery);

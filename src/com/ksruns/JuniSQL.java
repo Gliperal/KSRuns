@@ -31,6 +31,10 @@ public class JuniSQL
 			"FROM Login " +
 			"WHERE Username = ?" +
 			"AND SessionID = ?";
+	private static final String addPendingLevelQuery =
+			"INSERT INTO Levels " +
+			"(Code, Author, Name, Description, Download, Verified) " +
+			"VALUES (?, ?, ?, ?, ?, 0)";
 	private static final String addPendingRunQuery =
 			"INSERT INTO Runs " +
 			"(LevelID, CategoryID, PlayerID, RunTime, Date, Video, Verified) " +
@@ -191,6 +195,31 @@ public class JuniSQL
 			return false;
 		}
 		return true;
+	}
+	
+	public static boolean addPendingLevel(String code, String author, String name, String desc, String download) throws SQLException
+	{
+		// Check if a level with that code already exists
+		if (HennaSQL.levelExists(code))
+			return false;
+		
+		// Submit the level as pending
+		PreparedStatement statement = databaseConnection().prepareStatement(addPendingLevelQuery);
+		statement.setString(1, code);
+		statement.setString(2, author);
+		statement.setString(3, name);
+		statement.setString(4, desc);
+		statement.setString(5, download);
+		statement.executeUpdate();
+		return true;
+	}
+	
+	public static void addPendingCategory() throws SQLException
+	{
+		// TODO
+		//PreparedStatement statement = databaseConnection().prepareStatement(addPendingCategoryQuery);
+		//statement.setString(, );
+		//statement.executeUpdate();
 	}
 	
 	protected static void addPendingRun(int playerID, int levelID, int categoryID, int time, Date date, String video) throws SQLException

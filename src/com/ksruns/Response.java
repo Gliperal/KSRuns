@@ -69,6 +69,8 @@ public class Response
 		case bad_permissions:
 			response.put("message", "Invalid permissions.");
 			break;
+		case duplicate_level:
+			response.put("message", "A level already exists with that code.");
 		}
 	}
 	
@@ -91,5 +93,10 @@ public class Response
 	public void put(String key, JSONArray value)
 	{
 		response.put(key, value);
+	}
+
+	public boolean hasStatus()
+	{
+		return response.has("status") && response.get("status") != null;
 	}
 }

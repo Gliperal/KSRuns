@@ -1,6 +1,11 @@
 # Compiled class files
 *.class
 
+# Eclipse settings files
+.classpath
+.project
+.settings/*
+
 # SQL Passwords files
 src/com/ksruns/SQL.txt
 target/classes/com/ksruns/SQL.txt

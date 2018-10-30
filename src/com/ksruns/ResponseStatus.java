@@ -12,4 +12,5 @@ public enum ResponseStatus
 	bad_format,
 	bad_permissions,
 	bad_info,
+	duplicate_level,
 }

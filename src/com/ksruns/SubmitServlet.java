@@ -56,22 +56,12 @@ public class SubmitServlet extends HttpServlet
 		}
 		
 		// Send response back to servlet
+		if (!response.hasStatus())
+			response.setStatus(ResponseStatus.success);
 		response.writeToServletResponse(resp);
 	}
 	
-	private void submitLevel(JSONObject data, Response response) throws SQLException
-	{
-		System.out.println(data.toString());
-		// TODO
-	}
-	
-	private void submitCategory(JSONObject data, Response response) throws SQLException
-	{
-		System.out.println(data.toString());
-		// TODO
-	}
-	
-	private void submitRun(JSONObject data, Response response) throws SQLException
+	private boolean checkLogin(JSONObject data, Response response)
 	{
 		// validate session
 		if (
@@ -80,10 +70,62 @@ public class SubmitServlet extends HttpServlet
 				|| !(data.get("user") instanceof String)
 				|| !(data.get("sessionID") instanceof String)
 		)
+		{
 			response.setStatus(ResponseStatus.missing_info, "Missing username and/or sessionID.");
+			return false;
+		}
 		else if (!JuniSQL.verifySession(data.getString("user"), data.getString("sessionID")))
+		{
 			response.setStatus(ResponseStatus.bad_session_id);
-		else if (!data.has("levelID") || !data.has("categoryID") || !data.has("time") || !data.has("date"))
+			return false;
+		}
+		return true;
+	}
+	
+	private void submitLevel(JSONObject data, Response response) throws SQLException
+	{
+		// validate session
+		if(!checkLogin(data, response))
+			return;
+		
+		// process pending level
+		if (
+				!data.has("code") || !(data.get("code") instanceof String) ||
+				!data.has("name") || !(data.get("name") instanceof String) ||
+				!data.has("author") || !(data.get("author") instanceof String)
+		)
+			response.setStatus(ResponseStatus.missing_info);
+		String description = null;
+		if (data.has("description") && data.get("description") instanceof String)
+			description = data.getString("description");
+		String download = null;
+		if (data.has("download") && data.get("download") instanceof String)
+			download = data.getString("download");
+		
+		// Add it
+		boolean success = JuniSQL.addPendingLevel(data.getString("code"), data.getString("name"), data.getString("author"), description, download);
+		if (!success)
+			response.setStatus(ResponseStatus.duplicate_level);
+	}
+	
+	private void submitCategory(JSONObject data, Response response) throws SQLException
+	{
+		// validate session
+		if(!checkLogin(data, response))
+			return;
+		
+		// process pending category
+		// TODO
+	}
+	
+	private void submitRun(JSONObject data, Response response) throws SQLException
+	{
+		// validate session
+		if(!checkLogin(data, response))
+			return;
+		
+		// process pending run
+		if (!data.has("levelID") || !data.has("categoryID") || !data.has("time") || !data.has("date"))
 			response.setStatus(ResponseStatus.missing_info);
 		else
 		{
