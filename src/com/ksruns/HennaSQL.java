@@ -59,7 +59,7 @@ public class HennaSQL
 			"ON Levels.ID=Runs.LevelID " +
 			"LEFT JOIN Categories " +
 			"ON Categories.LevelID=Runs.LevelID AND Categories.ID=Runs.CategoryID " + 
-			"WHERE Levels.Verified=1 AND Runs.Verified IS NULL OR Runs.Verified=0";
+			"WHERE Levels.Verified=1 AND (Runs.Verified IS NULL OR Runs.Verified=0)";
 	private static final String pendingRunsQuery_levelCode =
 			"SELECT Runs.ID, Runs.RunTime, Players.Name, Players.Link, Runs.Date, Runs.Video " +
 			"FROM Runs " +
@@ -67,7 +67,7 @@ public class HennaSQL
 			"ON Players.ID=Runs.PlayerID " +
 			"RIGHT JOIN Levels " +
 			"ON Levels.ID=Runs.LevelID " +
-			"WHERE Levels.Code=? AND Levels.Verified=1 AND CategoryID=? AND Runs.Verified IS NULL OR Runs.Verified=0";
+			"WHERE Levels.Code=? AND Levels.Verified=1 AND CategoryID=? AND (Runs.Verified IS NULL OR Runs.Verified=0)";
 	
 	// TODO make this private again
 	static Connection databaseConnection() throws SQLException

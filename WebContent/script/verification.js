@@ -1,8 +1,8 @@
-function verify(runID, verifyOrReject)
+function verifyRun(runID, verifyOrReject)
 {
 	var requestData =
 	{
-			"request": "verify",
+			"request": "verify-run",
 			"user": LOGIN_USER,
 			"sessionID": LOGIN_SESS,
 			"pendingRunID": runID,

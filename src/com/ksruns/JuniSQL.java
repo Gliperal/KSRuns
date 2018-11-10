@@ -46,7 +46,7 @@ public class JuniSQL
 	private static final String verifyRunQuery0 =
 			"SELECT * " + 
 			"FROM Runs " + 
-			"WHERE ID = ? AND Verified IS NULL OR Verified = 0";
+			"WHERE ID = ? AND (Verified IS NULL OR Verified = 0)";
 	private static final String verifyRunQuery =
 			"UPDATE Runs " +
 			"SET Verified = 1 " +

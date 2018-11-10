@@ -225,13 +225,13 @@ var g_keyDates;
 var g_sliderDate;
 var g_keyDatesLength;
 
-function runVerify(runID)
+function runVerifyButtons(runID)
 {
 	var html = '';
 	html += '<abbr title="Verify this run.">';
-	html += '<img src="=PATH(IMAGEUTIL)=greenCheck.png" class="verifyButton" width="16" height="16" onclick="verify(' + runID + ', true)"/>'
+	html += '<img src="=PATH(IMAGEUTIL)=greenCheck.png" class="verifyButton" width="16" height="16" onclick="verifyRun(' + runID + ', true)"/>'
 	html += '</abbr><abbr title="Reject this run.">';
-	html += '<img src="=PATH(IMAGEUTIL)=redX.png" class="verifyButton" width="16" height="16" onclick="verify(' + runID + ', false)"/>';
+	html += '<img src="=PATH(IMAGEUTIL)=redX.png" class="verifyButton" width="16" height="16" onclick="verifyRun(' + runID + ', false)"/>';
 	html += '</abbr>';
 	return html;
 }
@@ -257,7 +257,7 @@ function runsToTable(runs)
 		tableHTML += '</td><td width="22%">';
 		tableHTML += videoLink(run.video);
 		if (run.pending == "true")
-			tableHTML += '</td><td width="10%">' + runVerify(run.id);
+			tableHTML += '</td><td width="10%">' + runVerifyButtons(run.id);
 		tableHTML += '</td></tr>';
 		index++;
 	}
