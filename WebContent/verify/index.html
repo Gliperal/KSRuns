@@ -30,9 +30,9 @@ function loadRuns(runs)
 		tableHTML += '</td><td width="11%">';
 		tableHTML += videoLink(run["video"]);
 		tableHTML += '</td><td width="11%">';
-		tableHTML += '<button onclick="verify(' + run["id"] + ', true)">Verify</button>';
+		tableHTML += '<button onclick="verifyRun(' + run["id"] + ', true)">Verify</button>';
 		tableHTML += '</td><td width="11%">';
-		tableHTML += '<button onclick="verify(' + run["id"] + ', false)">Reject</button>';
+		tableHTML += '<button onclick="verifyRun(' + run["id"] + ', false)">Reject</button>';
 		tableHTML += '</td></tr>';
 		index++;
 	}
@@ -51,7 +51,7 @@ function load()
 	}
 	var requestData =
 	{
-			"request": "pending",
+			"request": "pending-run",
 			"user": LOGIN_USER,
 			"sessionID": LOGIN_SESS
 	};
