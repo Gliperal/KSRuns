@@ -103,7 +103,7 @@ public class SubmitServlet extends HttpServlet
 			download = data.getString("download");
 		
 		// Add it
-		boolean success = JuniSQL.addPendingLevel(data.getString("code"), data.getString("name"), data.getString("author"), description, download);
+		boolean success = JuniSQL.addPendingLevel(data.getString("code"), data.getString("author"), data.getString("name"), description, download);
 		if (!success)
 			response.setStatus(ResponseStatus.duplicate_level);
 	}

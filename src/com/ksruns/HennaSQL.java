@@ -227,7 +227,8 @@ public class HennaSQL
 				level.put("categories", categories);
 				returnArray.put(level);
 			}
-			Category category = new Category(result.getInt(4), result.getString(5), result.getString(6));
+			int categoryID = result.getObject(4) == null ? 1 : result.getInt(4);
+			Category category = new Category(categoryID, result.getString(5), result.getString(6));
 			JSONObject lastLevel = (JSONObject) returnArray.get(returnArray.length()-1);
 			JSONArray categories = (JSONArray) lastLevel.get("categories");
 			categories.put(category.toJSON());

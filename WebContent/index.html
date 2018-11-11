@@ -89,8 +89,8 @@ function buildLevelsTableRow(index, width)
 
 function levelComparator(dead, parrot)
 {
-	deadFolder = dead.author + " - " + dead.name;
-	parrotFolder = parrot.author + " - " + parrot.name;
+	deadFolder = (dead.author + " - " + dead.name).toLowerCase();
+	parrotFolder = (parrot.author + " - " + parrot.name).toLowerCase();
 	if(deadFolder < parrotFolder)
 		return -1;
 	if(deadFolder > parrotFolder)
