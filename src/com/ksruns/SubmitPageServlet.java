@@ -31,9 +31,9 @@ public class SubmitPageServlet extends HttpServlet
 			html = Util.inputStreamToString(sc.getResourceAsStream(Properties.getPage("Submit")));
 			JSONArray categoriesByLevel = HennaSQL.fetchCategoriesByLevelJSON();
 			html = html.replaceAll("=ALLCATEGORIESJSON=", categoriesByLevel.toString());
-			html = html.replaceAll("=SCRIPTS/LOGINBAR=", Properties.getScript("LoginBar"));
+			html = html.replaceAll("=SCRIPTS/HEADERBAR=", Properties.getScript("HeaderBar"));
 			html = html.replaceAll("=SCRIPTS/SUBMITPAGE=", Properties.getScript("SubmitPage"));
-			html = html.replaceAll("=CSS/LOGINBAR=", Properties.getStyle("LoginBar"));
+			html = html.replaceAll("=CSS/HEADERBAR=", Properties.getStyle("HeaderBar"));
 		}
 		catch (SQLException e)
 		{

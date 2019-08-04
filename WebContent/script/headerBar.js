@@ -3,6 +3,16 @@ var LOGIN_SESS = null;
 
 function loginBar_init()
 {
+	document.getElementById("headerBar").innerHTML =
+	`
+		<table cellpadding=0 cellspacing=0><tr><td class="headerBarLeft">
+			<a href="/">
+				<img src="/KSRuns/images/util/home.png" alt="KSRuns" title="Home" height="24px">
+			</a>
+		</td><td class="headerBarRight">
+			<div id="loginBar"></div>
+		</td></tr></table>
+	`;
 	displayLogout();
 	checkLogin();
 }

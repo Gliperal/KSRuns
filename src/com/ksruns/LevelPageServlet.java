@@ -88,10 +88,10 @@ public class LevelPageServlet extends HttpServlet
 					// Build the response HTML
 					html = Util.inputStreamToString(sc.getResourceAsStream(Properties.getPage("LevelPage")));
 
-					html = html.replaceAll("=SCRIPTS/LOGINBAR=", Properties.getScript("LoginBar"));
+					html = html.replaceAll("=SCRIPTS/HEADERBAR=", Properties.getScript("HeaderBar"));
 					html = html.replaceAll("=SCRIPTS/RUNUTIL=", Properties.getScript("RunUtil"));
 					html = html.replaceAll("=SCRIPTS/VERIFICATION=", Properties.getScript("Verification"));
-					html = html.replaceAll("=CSS/LOGINBAR=", Properties.getStyle("LoginBar"));
+					html = html.replaceAll("=CSS/HEADERBAR=", Properties.getStyle("HeaderBar"));
 					html = html.replaceAll("=LEVELCODE=", "" + levelCode);
 					html = html.replaceAll("=RUNSJSON=", runsJSON.toString());
 					html = html.replaceAll("=CATEGORIESJSON=", categoriesJSON.toString());

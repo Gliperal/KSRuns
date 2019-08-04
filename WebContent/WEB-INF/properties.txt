@@ -10,13 +10,13 @@
 		"LevelIcon": "/KSRuns/images/icons/Icon"
 	},
 	"Scripts": {
-		"LoginBar": "/KSRuns/script/loginBar.js",
+		"HeaderBar": "/KSRuns/script/headerBar.js",
 		"RunUtil": "/KSRuns/script/runUtil.js",
 		"Verification": "/KSRuns/script/verification.js",
 		"SubmitPage": "/KSRuns/script/submitPage.js"
 	},
 	"Style": {
-		"LoginBar": "/KSRuns/style/loginBar.css"
+		"HeaderBar": "/KSRuns/style/headerBar.css"
 	},
 	"LevelBackdrops": {
 		"Root": "/KSRuns/images/backgrounds/",
@@ -33,6 +33,9 @@
 		"Backdrop18": [
 			{"file": "Background18a.png", "position": "center bottom"},
 			"Background18b.png"
-		]
+		],
+		"Backdrop25": "Background25.png",
+		"Backdrop29": "Background29.png",
+		"Backdrop30": "Background30.png"
 	}
 }

@@ -10,13 +10,13 @@
 		"LevelIcon": "/images/icons/Icon"
 	},
 	"Scripts": {
-		"LoginBar": "/script/loginBar.js",
+		"HeaderBar": "/script/headerBar.js",
 		"RunUtil": "/script/runUtil.js",
 		"Verification": "/script/verification.js",
 		"SubmitPage": "/script/submitPage.js"
 	},
 	"Style": {
-		"LoginBar": "/style/loginBar.css"
+		"HeaderBar": "/style/headerBar.css"
 	},
 	"LevelBackdrops": {
 		"Root": "/images/backgrounds/",
@@ -33,6 +33,9 @@
 		"Backdrop18": [
 			{"file": "Background18a.png", "position": "center bottom"},
 			"Background18b.png"
-		]
+		],
+		"Backdrop25": "Background25.png",
+		"Backdrop29": "Background29.png",
+		"Backdrop30": "Background30.png"
 	}
 }
