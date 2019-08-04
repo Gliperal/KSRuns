@@ -16,7 +16,8 @@
 		"SubmitPage": "/script/submitPage.js"
 	},
 	"Style": {
-		"HeaderBar": "/style/headerBar.css"
+		"HeaderBar": "/style/headerBar.css",
+		"Submit": "/style/submit.css"
 	},
 	"LevelBackdrops": {
 		"Root": "/images/backgrounds/",

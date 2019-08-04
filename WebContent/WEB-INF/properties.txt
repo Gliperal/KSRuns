@@ -16,7 +16,8 @@
 		"SubmitPage": "/KSRuns/script/submitPage.js"
 	},
 	"Style": {
-		"HeaderBar": "/KSRuns/style/headerBar.css"
+		"HeaderBar": "/KSRuns/style/headerBar.css",
+		"Submit": "/KSRuns/style/submit.css"
 	},
 	"LevelBackdrops": {
 		"Root": "/KSRuns/images/backgrounds/",

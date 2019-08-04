@@ -1,0 +1,41 @@
+body
+{
+	background-color: #AAF;
+}
+
+div.center
+{
+	margin-left: auto;
+	margin-right: auto;
+}
+
+div.main
+{
+	margin-left: auto;
+	margin-right: auto;
+	max-width: 400px;
+	text-align: center;
+}
+
+select.inputData
+{
+	width: 100%;
+	background-color: #DDF;
+}
+
+select.inputTime
+{
+	min-width: 50px;
+	background-color: #DDF;
+}
+
+input.inputData
+{
+	width: 100%;
+	background-color: #DDF;
+}
+
+div.lol
+{
+	font-size: 8pt;
+}

@@ -34,6 +34,7 @@ public class SubmitPageServlet extends HttpServlet
 			html = html.replaceAll("=SCRIPTS/HEADERBAR=", Properties.getScript("HeaderBar"));
 			html = html.replaceAll("=SCRIPTS/SUBMITPAGE=", Properties.getScript("SubmitPage"));
 			html = html.replaceAll("=CSS/HEADERBAR=", Properties.getStyle("HeaderBar"));
+			html = html.replaceAll("=CSS/SUBMIT=", Properties.getStyle("Submit"));
 		}
 		catch (SQLException e)
 		{
