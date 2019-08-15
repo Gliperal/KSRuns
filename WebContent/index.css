@@ -3,6 +3,22 @@ div.buttonContainer
 	padding: 30px;
 }
 
+table.levelsTable
+{
+	width: 100%;
+}
+
+div.resizeButtons
+{
+	padding-top: 10px;
+	padding-bottom: 30px;
+}
+
+div.resizeButtons button
+{
+	margin: 0px 3px;
+}
+
 a.topButton
 {
 	text-decoration: none;

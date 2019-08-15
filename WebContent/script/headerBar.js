@@ -7,7 +7,7 @@ function loginBar_init()
 	`
 		<table cellpadding=0 cellspacing=0><tr><td class="headerBarLeft">
 			<a href="/">
-				<img src="/KSRuns/images/util/home.png" alt="KSRuns" title="Home" height="24px">
+				<img src="/images/util/home.png" alt="KSRuns" title="Home" height="24px">
 			</a>
 		</td><td class="headerBarRight">
 			<div id="loginBar"></div>
