@@ -37,6 +37,7 @@
 		],
 		"Backdrop25": "Background25.png",
 		"Backdrop29": "Background29.png",
-		"Backdrop30": "Background30.png"
+		"Backdrop30": "Background30.png",
+		"Backdrop32": "Background32.png"
 	}
 }
