@@ -38,6 +38,10 @@
 		"Backdrop25": "Background25.png",
 		"Backdrop29": "Background29.png",
 		"Backdrop30": "Background30.png",
-		"Backdrop32": "Background32.png"
+		"Backdrop32": "Background32.png",
+		"Backdrop33": [
+			"Background33a.png",
+			"Background33b.png"
+		]
 	}
 }
