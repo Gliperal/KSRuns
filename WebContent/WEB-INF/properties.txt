@@ -42,6 +42,7 @@
 		"Backdrop33": [
 			"Background33a.png",
 			"Background33b.png"
-		]
+		],
+		"Backdrop36": "Background36.png",
 	}
 }
